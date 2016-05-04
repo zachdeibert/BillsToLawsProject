@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Game Board Diagram</title>
+        <style type="text/css">
+            div#active {
+                width: 640px;
+            }
+            div#active div {
+                height: 200px;
+                float: left;
+                text-align: center;
+                font-size: 4em;
+                overflow: hidden;
+            }
+        </style>
+        <script type="text/javascript">
+            var tiles = [
+                // Ideas
+                {id: "root", divs: [
+                    {size: "100%", id: "root", disp: "Idea From"},
+                    {size: "33%", id: "ideaCitizen", disp: "Citizen"},
+                    {size: "33%", id: "ideaGroup", disp: "Interest Group"},
+                    {size: "34%", id: "ideaLawmaker", disp: "Lawmaker"}
+                ]},
+                {id: "ideaCitizen", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "ideaCitizen", disp: "Idea from Citizen"},
+                    {size: "18%", id: "senateIntro", disp: "Senate"},
+                    {size: "82%", id: "houseIntro", disp: "House of Representatives"}
+                ]},
+                {id: "ideaGroup", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "ideaGroup", disp: "Idea from Interest Group"},
+                    {size: "18%", id: "senateIntro", disp: "Senate"},
+                    {size: "82%", id: "houseIntro", disp: "House of Representatives"}
+                ]},
+                {id: "ideaLawmaker", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "ideaLawmaker", disp: "Idea from Lawmaker"},
+                    {size: "18%", id: "senateIntro", disp: "Senate"},
+                    {size: "82%", id: "houseIntro", disp: "House of Representatives"}
+                ]},
+                // Senate
+                {id: "senateIntro", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "senateIntro", disp: "Introduction (Senate)"},
+                    {size: "100%", id: "senateCommittee", disp: "Committee"}
+                ]},
+                {id: "senateCommittee", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "senateCommittee", disp: "Committee (Senate)"},
+                    {size: "75%", id: "kill", disp: "Kill"},
+                    {size: "15%", id: "senateReportF", disp: "Report Favorably"},
+                    {size: "10%", id: "senateReportU", disp: "Report Unfavorably"}
+                ]},
+                // Senate (Reported Favorably)
+                {id: "senateReportF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "senateReportF", disp: "Favorable Report (Senate)"},
+                    {size: "100%", id: "senateDebateF", disp: "Debate"}
+                ]},
+                {id: "senateDebateF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "senateDebateF", disp: "Debate (Senate)"},
+                    {size: "65%", id: "FHouseIntro", disp: "Pass"},
+                    {size: "15%", id: "kill", disp: "Kill"},
+                    {size: "10%", id: "fillibusterF", disp: "Fillibuster"}
+                ]},
+                {id: "fillibusterF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "fillibusterF", disp: "Fillibuster (Senate)"},
+                    {size: "100%", id: "senateDebateF", disp: "Debate"}
+                ]},
+                // Senate (Reported Unfavorably)
+                {id: "senateReportU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "senateReportU", disp: "Unfavorable Report (Senate)"},
+                    {size: "100%", id: "senateDebateU", disp: "Debate"}
+                ]},
+                {id: "senateDebateU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "senateDebateU", disp: "Debate (Senate)"},
+                    {size: "15%", id: "UHouseIntro", disp: "Pass"},
+                    {size: "65%", id: "kill", disp: "Kill"},
+                    {size: "10%", id: "fillibusterU", disp: "Fillibuster"}
+                ]},
+                {id: "fillibusterU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "fillibusterU", disp: "Fillibuster (Senate)"},
+                    {size: "100%", id: "senateDebateU", disp: "Debate"}
+                ]},
+                // House (Senate Reported Favorably)
+                {id: "FHouseIntro", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FHouseIntro", disp: "Introduction (House)"},
+                    {size: "100%", id: "FHouseCommittee", disp: "Committee"}
+                ]},
+                {id: "FHouseCommittee", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FHouseCommittee", disp: "Committee (House)"},
+                    {size: "10%", id: "kill", disp: "Kill"},
+                    {size: "75%", id: "FHouseReportF", disp: "Report Favorably"},
+                    {size: "15%", id: "FHouseReportU", disp: "Report Unfavorably"}
+                ]},
+                // House (Reported Favorably, Senate Reported Favorably)
+                {id: "FHouseReportF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FHouseReportF", disp: "Favorable Report (House)"},
+                    {size: "100%", id: "FHouseRulesF", disp: "Rules Committee"}
+                ]},
+                {id: "FHouseRulesF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FHouseRulesF", disp: "Rules Committee (House)"},
+                    {size: "100%", id: "FHouseDebateF", disp: "Debate"}
+                ]},
+                {id: "FHouseDebateF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FHouseDebateF", disp: "Debate (House)"},
+                    {size: "75%", id: "FFSPresident", disp: "Pass"},
+                    {size: "25%", id: "kill", disp: "Kill"}
+                ]},
+                // House (Reported Unfavorably, Senate Reported Favorably)
+                {id: "FHouseReportU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FHouseReportU", disp: "Unfavorable Report (House)"},
+                    {size: "100%", id: "FHouseRulesU", disp: "Rules Committee"}
+                ]},
+                {id: "FHouseRulesU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FHouseRulesU", disp: "Rules Committee (House)"},
+                    {size: "100%", id: "FHouseDebateU", disp: "Debate"}
+                ]},
+                {id: "FHouseDebateU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FHouseDebateU", disp: "Debate (House)"},
+                    {size: "25%", id: "FUSPresident", disp: "Pass"},
+                    {size: "75%", id: "kill", disp: "Kill"}
+                ]},
+                // House (Senate Reported Unfavorably)
+                {id: "UHouseIntro", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UHouseIntro", disp: "Introduction (House)"},
+                    {size: "100%", id: "UHouseCommittee", disp: "Committee"}
+                ]},
+                {id: "UHouseCommittee", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UHouseCommittee", disp: "Committee (House)"},
+                    {size: "10%", id: "kill", disp: "Kill"},
+                    {size: "75%", id: "UHouseReportF", disp: "Report Favorably"},
+                    {size: "15%", id: "UHouseReportU", disp: "Report Unfavorably"}
+                ]},
+                // House (Reported Favorably, Senate Reported Unfavorably)
+                {id: "UHouseReportF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UHouseReportF", disp: "Favorable Report (House)"},
+                    {size: "100%", id: "UHouseRulesF", disp: "Rules Committee"}
+                ]},
+                {id: "UHouseRulesF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UHouseRulesF", disp: "Rules Committee (House)"},
+                    {size: "100%", id: "UHouseDebateF", disp: "Debate"}
+                ]},
+                {id: "UHouseDebateF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UHouseDebateF", disp: "Debate (House)"},
+                    {size: "75%", id: "UFSPresident", disp: "Pass"},
+                    {size: "25%", id: "kill", disp: "Kill"}
+                ]},
+                // House (Reported Unfavorably, Senate Reported Unfavorably)
+                {id: "UHouseReportU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UHouseReportU", disp: "Unfavorable Report (House)"},
+                    {size: "100%", id: "UHouseRulesU", disp: "Rules Committee"}
+                ]},
+                {id: "UHouseRulesU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UHouseRulesU", disp: "Rules Committee (House)"},
+                    {size: "100%", id: "UHouseDebateU", disp: "Debate"}
+                ]},
+                {id: "UHouseDebateU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UHouseDebateU", disp: "Debate (House)"},
+                    {size: "25%", id: "UUSPresident", disp: "Pass"},
+                    {size: "75%", id: "kill", disp: "Kill"}
+                ]},
+                // House
+                {id: "houseIntro", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "houseIntro", disp: "Introduction (House)"},
+                    {size: "100%", id: "houseCommittee", disp: "Committee"}
+                ]},
+                {id: "houseCommittee", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "houseCommittee", disp: "Committee (House)"},
+                    {size: "75%", id: "kill", disp: "Kill"},
+                    {size: "15%", id: "houseReportF", disp: "Report Favorably"},
+                    {size: "10%", id: "houseReportU", disp: "Report Unfavorably"}
+                ]},
+                // House (Reported Favorably)
+                {id: "houseReportF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "houseReportF", disp: "Favorable Report (House)"},
+                    {size: "100%", id: "houseRulesF", disp: "Rules Committee"}
+                ]},
+                {id: "houseRulesF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "houseRulesF", disp: "Rules Committee (House)"},
+                    {size: "100%", id: "houseDebateF", disp: "Debate"}
+                ]},
+                {id: "houseDebateF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "houseDebateF", disp: "Debate (House)"},
+                    {size: "75%", id: "FSenateIntro", disp: "Pass"},
+                    {size: "25%", id: "kill", disp: "Kill"}
+                ]},
+                // House (Reported Unfavorably)
+                {id: "houseReportU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "houseReportU", disp: "Unfavorable Report (House)"},
+                    {size: "100%", id: "houseRulesU", disp: "Rules Committee"}
+                ]},
+                {id: "houseRulesU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "houseRulesU", disp: "Rules Committee (House)"},
+                    {size: "100%", id: "houseDebateU", disp: "Debate"}
+                ]},
+                {id: "houseDebateU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "houseDebateU", disp: "Debate (House)"},
+                    {size: "75%", id: "USenateIntro", disp: "Pass"},
+                    {size: "25%", id: "kill", disp: "Kill"}
+                ]},
+                // Senate (House Reported Favorably)
+                {id: "FSenateIntro", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FSenateIntro", disp: "Introduction (Senate)"},
+                    {size: "100%", id: "FSenateCommittee", disp: "Committee"}
+                ]},
+                {id: "FSenateCommittee", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FSenateCommittee", disp: "Committee (Senate)"},
+                    {size: "75%", id: "kill", disp: "Kill"},
+                    {size: "15%", id: "FSenateReportF", disp: "Report Favorably"},
+                    {size: "10%", id: "FSenateReportU", disp: "Report Unfavorably"}
+                ]},
+                // Senate (Reported Favorably, House Reported Favorably)
+                {id: "FSenateReportF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FSenateReportF", disp: "Favorable Report (Senate)"},
+                    {size: "100%", id: "FSenateDebateF", disp: "Debate"}
+                ]},
+                {id: "FSenateDebateF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FSenateDebateF", disp: "Debate (Senate)"},
+                    {size: "65%", id: "FFHPresident", disp: "Pass"},
+                    {size: "15%", id: "kill", disp: "Kill"},
+                    {size: "10%", id: "FFillibusterF", disp: "Fillibuster"}
+                ]},
+                {id: "FFillibusterF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FFillibusterF", disp: "Fillibuster (Senate)"},
+                    {size: "100%", id: "FSenateDebateF", disp: "Debate"}
+                ]},
+                // Senate (Reported Unfavorably, House Reported Favorably)
+                {id: "FSenateReportU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FSenateReportU", disp: "Unfavorable Report (Senate)"},
+                    {size: "100%", id: "FSenateDebateU", disp: "Debate"}
+                ]},
+                {id: "FSenateDebateU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FSenateDebateU", disp: "Debate (Senate)"},
+                    {size: "15%", id: "FUHPresident", disp: "Pass"},
+                    {size: "65%", id: "kill", disp: "Kill"},
+                    {size: "10%", id: "FFillibusterU", disp: "Fillibuster"}
+                ]},
+                {id: "FFillibusterU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FFillibusterU", disp: "Fillibuster (Senate)"},
+                    {size: "100%", id: "FSenateDebateU", disp: "Debate"}
+                ]},
+                // Senate (House Reported Unfavorably)
+                {id: "USenateIntro", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "USenateIntro", disp: "Introduction (Senate)"},
+                    {size: "100%", id: "USenateCommittee", disp: "Committee"}
+                ]},
+                {id: "USenateCommittee", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "USenateCommittee", disp: "Committee (Senate)"},
+                    {size: "75%", id: "kill", disp: "Kill"},
+                    {size: "15%", id: "USenateReportF", disp: "Report Favorably"},
+                    {size: "10%", id: "USenateReportU", disp: "Report Unfavorably"}
+                ]},
+                // Senate (Reported Favorably, House Reported Unfavorably)
+                {id: "USenateReportF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "USenateReportF", disp: "Favorable Report (Senate)"},
+                    {size: "100%", id: "USenateDebateF", disp: "Debate"}
+                ]},
+                {id: "USenateDebateF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "USenateDebateF", disp: "Debate (Senate)"},
+                    {size: "65%", id: "UFHPresident", disp: "Pass"},
+                    {size: "15%", id: "kill", disp: "Kill"},
+                    {size: "10%", id: "UFillibusterF", disp: "Fillibuster"}
+                ]},
+                {id: "UFillibusterF", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UFillibusterF", disp: "Fillibuster (Senate)"},
+                    {size: "100%", id: "USenateDebateF", disp: "Debate"}
+                ]},
+                // Senate (Reported Unfavorably, House Reported Unfavorably)
+                {id: "USenateReportU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "USenateReportU", disp: "Unfavorable Report (Senate)"},
+                    {size: "100%", id: "USenateDebateU", disp: "Debate"}
+                ]},
+                {id: "USenateDebateU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "USenateDebateU", disp: "Debate (Senate)"},
+                    {size: "15%", id: "UUHPresident", disp: "Pass"},
+                    {size: "65%", id: "kill", disp: "Kill"},
+                    {size: "10%", id: "UFillibusterU", disp: "Fillibuster"}
+                ]},
+                {id: "UFillibusterU", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UFillibusterU", disp: "Fillibuster (Senate)"},
+                    {size: "100%", id: "USenateDebateU", disp: "Debate"}
+                ]},
+                // President
+                {id: "FFSPresident", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FFSPresident", disp: "President"},
+                    {size: "50%", id: "FFSenateOverride", disp: "Veto"},
+                    {size: "25%", id: "kill", disp: "Pocket Veto"},
+                    {size: "25%", id: "law", disp: "Sign"}
+                ]},
+                {id: "FUSPresident", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FUSPresident", disp: "President"},
+                    {size: "50%", id: "FUSenateOverride", disp: "Veto"},
+                    {size: "25%", id: "kill", disp: "Pocket Veto"},
+                    {size: "25%", id: "law", disp: "Sign"}
+                ]},
+                {id: "UFSPresident", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UFSPresident", disp: "President"},
+                    {size: "50%", id: "UFSenateOverride", disp: "Veto"},
+                    {size: "25%", id: "kill", disp: "Pocket Veto"},
+                    {size: "25%", id: "law", disp: "Sign"}
+                ]},
+                {id: "UUSPresident", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UUSPresident", disp: "President"},
+                    {size: "50%", id: "UUSenateOverride", disp: "Veto"},
+                    {size: "25%", id: "kill", disp: "Pocket Veto"},
+                    {size: "25%", id: "law", disp: "Sign"}
+                ]},
+                {id: "FFHPresident", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FFHPresident", disp: "President"},
+                    {size: "50%", id: "FFHouseOverride", disp: "Veto"},
+                    {size: "25%", id: "kill", disp: "Pocket Veto"},
+                    {size: "25%", id: "law", disp: "Sign"}
+                ]},
+                {id: "FUHPresident", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FUHPresident", disp: "President"},
+                    {size: "50%", id: "FUHouseOverride", disp: "Veto"},
+                    {size: "25%", id: "kill", disp: "Pocket Veto"},
+                    {size: "25%", id: "law", disp: "Sign"}
+                ]},
+                {id: "UFHPresident", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UFHPresident", disp: "President"},
+                    {size: "50%", id: "UFHouseOverride", disp: "Veto"},
+                    {size: "25%", id: "kill", disp: "Pocket Veto"},
+                    {size: "25%", id: "law", disp: "Sign"}
+                ]},
+                {id: "UUHPresident", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UUHPresident", disp: "President"},
+                    {size: "50%", id: "UUHouseOverride", disp: "Veto"},
+                    {size: "25%", id: "kill", disp: "Pocket Veto"},
+                    {size: "25%", id: "law", disp: "Sign"}
+                ]},
+                // Veto overrides
+                {id: "FFSenateOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FFSenateOverride", disp: "Senate Override"},
+                    {size: "85%", id: "FHouseOverride", disp: "Pass"},
+                    {size: "15%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "FUSenateOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FUSenateOverride", disp: "Senate Override"},
+                    {size: "85%", id: "UHouseOverride", disp: "Pass"},
+                    {size: "15%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "UFSenateOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UFSenateOverride", disp: "Senate Override"},
+                    {size: "15%", id: "FHouseOverride", disp: "Pass"},
+                    {size: "85%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "UUSenateOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UUSenateOverride", disp: "Senate Override"},
+                    {size: "15%", id: "UHouseOverride", disp: "Pass"},
+                    {size: "85%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "FFHouseOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FFHouseOverride", disp: "House Override"},
+                    {size: "85%", id: "FSenateOverride", disp: "Pass"},
+                    {size: "15%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "FUHouseOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FUHouseOverride", disp: "House Override"},
+                    {size: "85%", id: "USenateOverride", disp: "Pass"},
+                    {size: "15%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "UFHouseOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UFHouseOverride", disp: "House Override"},
+                    {size: "15%", id: "FSenateOverride", disp: "Pass"},
+                    {size: "85%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "UUHouseOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UUHouseOverride", disp: "House Override"},
+                    {size: "15%", id: "USenateOverride", disp: "Pass"},
+                    {size: "85%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "FSenateOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FSenateOverride", disp: "Senate Override"},
+                    {size: "85%", id: "law", disp: "Pass"},
+                    {size: "15%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "USenateOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "USenateOverride", disp: "Senate Override"},
+                    {size: "15%", id: "law", disp: "Pass"},
+                    {size: "85%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "FHouseOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "FHouseOverride", disp: "House Override"},
+                    {size: "85%", id: "law", disp: "Pass"},
+                    {size: "15%", id: "kill", disp: "Kill"}
+                ]},
+                {id: "UHouseOverride", divs: [
+                    {size: "100%", id: "root", disp: "Back to Top"},
+                    {size: "100%", id: "UHouseOverride", disp: "House Override"},
+                    {size: "15%", id: "law", disp: "Pass"},
+                    {size: "85%", id: "kill", disp: "Kill"}
+                ]},
+                // Other
+                {id: "law", divs: [
+                    {size: "100%", id: "law", disp: "The bill became a law!"},
+                    {size: "100%", id: "root", disp: "Back to Top"}
+                ]},
+                {id: "kill", divs: [
+                    {size: "100%", id: "kill", disp: "The bill died"},
+                    {size: "100%", id: "root", disp: "Back to Top"}
+                ]}
+            ];
+            var colors = [
+                {text: "#000000", back: "#00FF00"},
+                {text: "#000000", back: "#FFFF00"},
+                {text: "#000000", back: "#FF00FF"},
+                {text: "#000000", back: "#00FFFF"},
+                {text: "#000000", back: "#0000FF"}
+            ];
+            
+            function switchTo(id) {
+                var tid = -1;
+                for ( var i = 0; i < tiles.length; i++ ) {
+                    if ( tiles[i].id == id ) {
+                        tid = i;
+                    }
+                }
+                if ( tid == -1 ) {
+                    return;
+                }
+                var html = "";
+                for ( var i = 0; i < tiles[tid].divs.length; i++ ) {
+                    var e = tiles[tid].divs[i];
+                    html += "<div style=\"width: " + e.size + "; color: " + colors[i].text + "; background-color: " + colors[i].back + "\" onclick=\"switchTo(\'" + e.id + "\')\"><abbr title=\"" + e.disp + "\">" + e.disp + "</abbr></div>";
+                }
+                document.getElementById("active").innerHTML = html;
+            }
+        </script>
+    </head>
+    <body>
+        <div id="active">
+            <fieldset id="instructions" style="display: none">
+                <legend>Instructions</legend>
+                <i>
+                    This is the simulator, not the actual game.
+                    <br />
+                    To view the game, open the jar file at /dist/BillsToLaws.jar
+                </i>
+                <br />
+                All tiles' sizes are proportionate to thier chances.
+                <br />
+                Clicking on a tile navigates to it.
+                <br />
+                <button onclick="switchTo('root')">Begin</button>
+            </fieldset>
+            <fieldset>
+                <legend>License Agreement</legend>
+                Copyright (c) 2014, Zach Deibert
+                <br />
+                All rights reserved.
+                <hr /><br />
+                Redistribution and use in source and binary forms, with or without
+                modification, are permitted provided that the following conditions are met:
+                <br /><br />
+                <ol>
+                    <li>
+                        Redistributions of source code must retain the above copyright notice,
+                        this list of conditions and the following disclaimer.
+                    </li>
+                    <li>
+                        Redistributions in binary form must reproduce the above copyright notice,
+                        this list of conditions and the following disclaimer in the documentation
+                        and/or other materials provided with the distribution.
+                    </li>
+                    <li>
+                        Neither the name of the copyright holder nor the names of its contributors
+                        may be used to endorse or promote products derived from this software without
+                        specific prior written permission.
+                    </li>
+                </ol>
+                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+                AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+                IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+                ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+                LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+                CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+                SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+                INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+                CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+                ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+                POSSIBILITY OF SUCH DAMAGE.
+                <br />
+                <button onclick="document.getElementById('instructions').style.display = 'block'">Accept</button>
+            </fieldset>
+        </div>
+    </body>
+</html>
